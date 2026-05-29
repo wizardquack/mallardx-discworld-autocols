@@ -46,14 +46,11 @@ local function wrap_with_cols(original)
   mud.send("cols " .. WIDE_COLS)
 end
 
--- Callback signature: function(_line, m)
---   _line = the full matched input string (unused here)
---   m     = Lua table of regex captures, 0-indexed at the Rust level but
---           set via enumerate() so m[0] = whole match, m[1] = capture group 1,
---           m[2] = capture group 2. See runtime.rs invoke_callback for the
---           authoritative dispatch.
+-- Callback receives a LuaMatch object exposing positional captures via m[N]
+-- (1-indexed user groups; full matched line is m.text). See Mallard's plugin
+-- API redesign retrospective for the (m) callback shape rationale.
 for _, c in ipairs(WRAPPED_COMMANDS) do
-  mud.alias("^(" .. c.regex .. ")( .*)?$", function(_line, m)
+  mud.alias("^(" .. c.regex .. ")( .*)?$", function(m)
     -- m[1] = the matched command (e.g. "inv" or "inventory")
     -- m[2] = the arg tail including leading space (e.g. " weapons") or nil
     wrap_with_cols(m[1] .. (m[2] or ""))
@@ -68,7 +65,7 @@ end)
 
 local in_mail = false
 
-mud.alias("^mail( .*)?$", function(_line, m)
+mud.alias("^mail( .*)?$", function(m)
   local tail = m[1] or ""
   in_mail = true
   mud.send("cols " .. narrow_cols())
@@ -84,7 +81,7 @@ end)
 
 local in_title_quest = false
 
-mud.alias("^title quest( .*)?$", function(_line, m)
+mud.alias("^title quest( .*)?$", function(m)
   local tail = m[1] or ""
   in_title_quest = true
   mud.send("cols " .. narrow_cols())
@@ -101,7 +98,7 @@ world.on("line", function(line)
   end
 end)
 
-mud.alias("^spells( .*)?$", function(_line, m)
+mud.alias("^spells( .*)?$", function(m)
   local tail = m[1] or ""
   wrap_with_cols("spells" .. tail)
 end, { name = "autocols-spells" })
