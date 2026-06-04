@@ -4,11 +4,12 @@ Automatically toggles the server-side `cols` setting around column-aware command
 
 ## What it does
 
-Mallard advertises a banner width of 999 columns to the server (via NAWS) so that
-server-side word-wrap doesn't interfere with trigger matching. However, many
-Discworld commands like `inv`, `who`, `help`, and `skills` respond with decorative
-banners padded to your advertised width — which becomes 999-character visual noise
-when displayed in a reasonably-sized window.
+Mallard encourages users to set `cols` to 999 columns to minimize
+problems with server-side word-wrap interfering with trigger matching.
+However, many Discworld commands like `inv`, `who`, `help`, and
+`skills` respond with decorative banners padded to your advertised
+width — which becomes 999-character visual noise when displayed in a
+reasonably-sized window.
 
 This plugin intercepts those commands, temporarily sets `cols` to your live
 OutputPane width (read via `mud.viewport()`), sends the command, and restores
@@ -46,6 +47,10 @@ output you'd like sized to your pane.
 
 Aliases match exact command spellings. If you type `i` for `inventory` or
 `w` for `who`, the plugin will not intercept them. Type the full command name
-(`inventory` or `who`) for the plugin to engage. (This follows the `tt_dw`
-convention of not trying to be clever about abbreviations.)
+(`inventory` or `who`) for the plugin to engage.
 
+## Credit
+
+Many thanks to Oki and their scripts at
+https://code.tubul.net/tt_dw/scripts for the clever idea and
+inspiration for this plugin.
