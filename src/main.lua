@@ -46,6 +46,38 @@ local function wrap_with_cols(original)
   mud.send("cols " .. WIDE_COLS)
 end
 
+-- Append user-supplied entries from the `extra_commands` setting before
+-- registering. The setting is a free-form string; entries are split on commas
+-- or whitespace, and each entry may use `a|b` to list synonyms (mirroring the
+-- built-in regex shape). Only word chars (a-z 0-9 _ -) and `|` are allowed
+-- inside an entry, so the value lands in the regex unescaped without risking
+-- metachar surprises. Entries whose words collide with anything already
+-- wrapped are dropped with a warning — registering both would double-wrap.
+local taken_words = {}
+for _, c in ipairs(WRAPPED_COMMANDS) do
+  for word in c.regex:gmatch("[^|]+") do taken_words[word] = c.name end
+end
+
+local raw = settings.get("extra_commands") or ""
+for token in raw:gmatch("[^,%s]+") do
+  if not token:match("^[%w%-_|]+$") then
+    log.warn("autocols: ignoring invalid extra command " .. token
+      .. " (only letters, digits, _, -, and | are allowed)")
+  else
+    local clash
+    for word in token:gmatch("[^|]+") do
+      if taken_words[word] then clash = word; break end
+    end
+    if clash then
+      log.warn("autocols: ignoring extra command " .. token
+        .. " — `" .. clash .. "` is already wrapped by `" .. taken_words[clash] .. "`")
+    else
+      for word in token:gmatch("[^|]+") do taken_words[word] = token end
+      table.insert(WRAPPED_COMMANDS, { name = "extra-" .. token:gsub("|", "-"), regex = token })
+    end
+  end
+end
+
 -- Callback receives a LuaMatch object exposing positional captures via m[N]
 -- (1-indexed user groups; full matched line is m.text). See Mallard's plugin
 -- API redesign retrospective for the (m) callback shape rationale.

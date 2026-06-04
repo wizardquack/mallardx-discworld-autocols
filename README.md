@@ -31,6 +31,17 @@ The narrow width follows your OutputPane: drag the pane wider and banners get
 wider; drag it narrower and they shrink. The `mail` and `title quest` modes
 also re-send `cols N` when you resize mid-session so subsequent prompts match.
 
+## Adding your own commands
+
+The plugin exposes an **Extra commands to wrap** setting (per world, so each
+character can have its own list). Add any command word that produces banner
+output you'd like sized to your pane.
+
+- Separate entries with commas or whitespace: `skp, taa, score`
+- Use a pipe to list synonyms for one entry: `skp|skillpoints`
+- Only letters, digits, `_`, `-`, and `|` are allowed inside an entry
+- If you re-declare a built-in command (e.g. `skills`), your entry replaces it
+
 ## Known limitation: abbreviations
 
 Aliases match exact command spellings. If you type `i` for `inventory` or
