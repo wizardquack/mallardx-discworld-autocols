@@ -38,18 +38,3 @@ Aliases match exact command spellings. If you type `i` for `inventory` or
 (`inventory` or `who`) for the plugin to engage. (This follows the `tt_dw`
 convention of not trying to be clever about abbreviations.)
 
-## Development
-
-```sh
-bash scripts/reinstall.sh   # packages .mallardx + installs to Mallard's dev plugin dir
-```
-
-Conventional checkout layout (sibling of mallard):
-
-```
-~/code/mallard/
-~/code/mallardx-discworld-autocols/   # this repo
-```
-
-The install script resolves Mallard's plugin-install dir via the platform
-app-data path; the maintainer can clone this repo anywhere.
