@@ -41,9 +41,9 @@ local WRAPPED_COMMANDS = {
 }
 
 local function wrap_with_cols(original)
-  mud.send("cols " .. narrow_cols())
+  mud.send("cols " .. narrow_cols(), { silent = true })
   mud.send(original)
-  mud.send("cols " .. WIDE_COLS)
+  mud.send("cols " .. WIDE_COLS, { silent = true })
 end
 
 -- Append user-supplied entries from the `extra_commands` setting before
@@ -100,14 +100,14 @@ local in_mail = false
 mud.alias("^mail( .*)?$", function(m)
   local tail = m[1] or ""
   in_mail = true
-  mud.send("cols " .. narrow_cols())
+  mud.send("cols " .. narrow_cols(), { silent = true })
   mud.send("mail" .. tail)
 end, { name = "autocols-mail" })
 
 world.on("line", function(line)
   if in_mail and line.text:match("^Quitting mailer%.%.%. OK%.$") then
     in_mail = false
-    mud.send("cols " .. WIDE_COLS)
+    mud.send("cols " .. WIDE_COLS, { silent = true })
   end
 end)
 
@@ -116,17 +116,17 @@ local in_title_quest = false
 mud.alias("^title quest( .*)?$", function(m)
   local tail = m[1] or ""
   in_title_quest = true
-  mud.send("cols " .. narrow_cols())
+  mud.send("cols " .. narrow_cols(), { silent = true })
   mud.send("title quest" .. tail)
 end, { name = "autocols-title-quest" })
 
 world.on("line", function(line)
   if in_title_quest and line.text:match("^Aborted%.$") then
     in_title_quest = false
-    mud.send("cols " .. WIDE_COLS)
+    mud.send("cols " .. WIDE_COLS, { silent = true })
   elseif in_title_quest and line.text:match("^Set the quest title to .+%.$") then
     in_title_quest = false
-    mud.send("cols " .. WIDE_COLS)
+    mud.send("cols " .. WIDE_COLS, { silent = true })
   end
 end)
 
@@ -141,7 +141,7 @@ end, { name = "autocols-spells" })
 -- the live viewport at invocation time and don't need this hook.
 events.on("viewport.resized", function(_v)
   if in_mail or in_title_quest then
-    mud.send("cols " .. narrow_cols())
+    mud.send("cols " .. narrow_cols(), { silent = true })
   end
 end)
 
