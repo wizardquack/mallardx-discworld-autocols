@@ -1,6 +1,6 @@
 id = "net.mallard.discworld-autocols"
 name = "Discworld Autocols"
-version = "0.2.2"
+version = "0.3.0"
 description = "Automatically toggles the server-side `cols` setting around column-aware commands."
 language = "lua"
 entry = "src/main.lua"
