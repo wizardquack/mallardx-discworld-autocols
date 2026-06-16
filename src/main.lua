@@ -135,6 +135,14 @@ mud.alias("^spells( .*)?$", function(m)
   wrap_with_cols("spells" .. tail)
 end, { name = "autocols-spells" })
 
+-- `group status` gets a banner sized to `cols`, but `group status brief` is a
+-- compact one-liner that doesn't need wrapping. Match the bare command exactly
+-- (trailing whitespace tolerated) so the brief variant — and any future
+-- subcommands — fall through unwrapped.
+mud.alias("^group status\\s*$", function()
+  wrap_with_cols("group status")
+end, { name = "autocols-group-status" })
+
 -- If the user drags the pane wider/narrower mid-session while inside one
 -- of the stateful modes, push a fresh `cols N` so subsequent prompts match
 -- the new width. Single-shot wrapped commands (`inv`, `who`, etc.) read
