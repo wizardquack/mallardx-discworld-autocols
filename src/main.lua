@@ -42,7 +42,9 @@ local WRAPPED_COMMANDS = {
 
 local function wrap_with_cols(original)
   mud.send("cols " .. narrow_cols(), { silent = true })
-  mud.send(original)
+  -- Silent: the client already echoes the literal typed line (echoClientInput),
+  -- so a non-silent re-send here would double the echo.
+  mud.send(original, { silent = true })
   mud.send("cols " .. WIDE_COLS, { silent = true })
 end
 
@@ -101,7 +103,7 @@ mud.alias("^mail( .*)?$", function(m)
   local tail = m[1] or ""
   in_mail = true
   mud.send("cols " .. narrow_cols(), { silent = true })
-  mud.send("mail" .. tail)
+  mud.send("mail" .. tail, { silent = true })
 end, { name = "autocols-mail" })
 
 world.on("line", function(line)
@@ -117,7 +119,7 @@ mud.alias("^title quest( .*)?$", function(m)
   local tail = m[1] or ""
   in_title_quest = true
   mud.send("cols " .. narrow_cols(), { silent = true })
-  mud.send("title quest" .. tail)
+  mud.send("title quest" .. tail, { silent = true })
 end, { name = "autocols-title-quest" })
 
 world.on("line", function(line)
