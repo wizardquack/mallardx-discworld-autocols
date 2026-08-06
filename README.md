@@ -38,10 +38,12 @@ The plugin exposes an **Extra commands to wrap** setting (per world, so each
 character can have its own list). Add any command word that produces banner
 output you'd like sized to your pane.
 
-- Separate entries with commas or whitespace: `skp, taa, score`
+- Separate entries with commas: `skp, taa, score`
+- An entry may contain spaces for multi-word commands: `look mailbox, read runes`
 - Use a pipe to list synonyms for one entry: `skp|skillpoints`
-- Only letters, digits, `_`, `-`, and `|` are allowed inside an entry
-- If you re-declare a built-in command (e.g. `skills`), your entry replaces it
+- Only letters, digits, spaces, `_`, `-`, and `|` are allowed inside an entry
+- If you re-declare a command that's already wrapped (e.g. `skills`), your entry
+  is ignored with a warning
 
 ## Known limitation: abbreviations
 

@@ -49,33 +49,62 @@ local function wrap_with_cols(original)
 end
 
 -- Append user-supplied entries from the `extra_commands` setting before
--- registering. The setting is a free-form string; entries are split on commas
--- or whitespace, and each entry may use `a|b` to list synonyms (mirroring the
--- built-in regex shape). Only word chars (a-z 0-9 _ -) and `|` are allowed
--- inside an entry, so the value lands in the regex unescaped without risking
--- metachar surprises. Entries whose words collide with anything already
--- wrapped are dropped with a warning — registering both would double-wrap.
+-- registering. The in-app setting is a single-line textbox, so entries are
+-- separated by commas only — whitespace can't double as a separator or
+-- multi-word commands like `look mailbox` would be impossible to express. Each
+-- entry may use `a|b` to list synonyms (mirroring the built-in regex shape).
+-- Within an entry only letters, digits, spaces, `_`, `-`, and `|` are allowed,
+-- so the value lands in the regex unescaped without risking metachar surprises.
+-- Surrounding whitespace is trimmed and internal runs collapse to a single
+-- space so the registered regex matches exactly one space between words.
+-- Entries whose words collide with anything already wrapped are dropped with a
+-- warning — registering both would double-wrap.
 local taken_words = {}
 for _, c in ipairs(WRAPPED_COMMANDS) do
   for word in c.regex:gmatch("[^|]+") do taken_words[word] = c.name end
 end
+-- Reserve the specially-handled commands defined outside WRAPPED_COMMANDS
+-- (stateful modes and bespoke aliases further below) so a now-permitted
+-- multi-word user entry can't silently double-wrap them.
+for _, w in ipairs({ "mail", "title quest", "spells", "group status" }) do
+  taken_words[w] = w
+end
+
+-- Trim a single synonym and collapse internal whitespace to single spaces.
+-- Returns nil if it is empty or holds a disallowed character, so the caller can
+-- reject the whole entry.
+local function clean_synonym(syn)
+  syn = syn:match("^%s*(.-)%s*$"):gsub("%s+", " ")
+  if syn == "" or not syn:match("^[%w%-_ ]+$") then return nil end
+  return syn
+end
 
 local raw = settings.get("extra_commands") or ""
-for token in raw:gmatch("[^,%s]+") do
-  if not token:match("^[%w%-_|]+$") then
-    log.warn("autocols: ignoring invalid extra command " .. token
-      .. " (only letters, digits, _, -, and | are allowed)")
+for entry in raw:gmatch("[^,\n]+") do
+  local synonyms, bad = {}, false
+  for syn in entry:gmatch("[^|]+") do
+    local cleaned = clean_synonym(syn)
+    if not cleaned then bad = true; break end
+    table.insert(synonyms, cleaned)
+  end
+  if bad or #synonyms == 0 then
+    local shown = entry:match("^%s*(.-)%s*$")
+    if shown ~= "" then
+      log.warn("autocols: ignoring invalid extra command `" .. shown
+        .. "` (only letters, digits, spaces, _, -, and | are allowed)")
+    end
   else
+    local regex = table.concat(synonyms, "|")
     local clash
-    for word in token:gmatch("[^|]+") do
+    for _, word in ipairs(synonyms) do
       if taken_words[word] then clash = word; break end
     end
     if clash then
-      log.warn("autocols: ignoring extra command " .. token
-        .. " — `" .. clash .. "` is already wrapped by `" .. taken_words[clash] .. "`")
+      log.warn("autocols: ignoring extra command `" .. regex
+        .. "` — `" .. clash .. "` is already wrapped by `" .. taken_words[clash] .. "`")
     else
-      for word in token:gmatch("[^|]+") do taken_words[word] = token end
-      table.insert(WRAPPED_COMMANDS, { name = "extra-" .. token:gsub("|", "-"), regex = token })
+      for _, word in ipairs(synonyms) do taken_words[word] = regex end
+      table.insert(WRAPPED_COMMANDS, { name = "extra-" .. regex:gsub("[|%s]", "-"), regex = regex })
     end
   end
 end

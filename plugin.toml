@@ -19,4 +19,4 @@ match = ["discworld.starturtle.net:*"]
 type = "string"
 default = ""
 label = "Extra commands to wrap"
-description = "Additional commands to wrap with cols toggling, beyond the built-in list. Separate entries with commas or whitespace. Use a pipe to list synonyms for one entry (e.g. `skp|skillpoints`). Settings are saved per world, so each character can have their own list."
+description = "Additional commands to wrap with cols toggling, beyond the built-in list. Separate entries with commas (e.g. `skp, taa, look mailbox`); an entry may contain spaces for multi-word commands. Use a pipe to list synonyms for one entry (e.g. `skp|skillpoints`). Settings are saved per world, so each character can have their own list."
