@@ -37,6 +37,7 @@ local WRAPPED_COMMANDS = {
   { name = "rituals",   regex = "rituals" },
   { name = "skills",    regex = "skills" },
   { name = "speak",     regex = "sp|speak" },
+  { name = "syntax",    regex = "syntax" },
   { name = "who",       regex = "who" },
 }
 

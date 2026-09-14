@@ -23,7 +23,8 @@ The plugin automatically wraps the following commands:
 
 - **Single-shot** (toggle narrower, send, toggle back): `alias`, `blog`, `cost`,
   `countries`, `group status`, `help`, `inv` / `inventory`, `lang` / `language`,
-  `nickname`, `quest`, `rituals`, `skills`, `sp` / `speak`, `spells`, `who`
+  `nickname`, `quest`, `rituals`, `skills`, `sp` / `speak`, `spells`, `syntax`,
+  `who`
 - **Stateful modes** (stay narrow until explicit exit): `mail`, `title quest`
 
 ## Column width
